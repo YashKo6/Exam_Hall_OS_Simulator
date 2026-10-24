@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EXAM/OS · Hall Management Simulator</title>
+<style>
+:root{--bg:#f3eee3;--ink:#16161a;--lime:#c8f031;--coral:#ff6a4d;--sky:#8ec5ff;--lilac:#c9b6ff;--mint:#9be8c3;--sun:#ffd54a;--mu:#6b675c}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 "Segoe UI",system-ui,sans-serif;display:flex;min-height:100vh;background-image:radial-gradient(#d9d2c0 1px,transparent 1px);background-size:22px 22px}
+aside{width:236px;background:var(--ink);color:#f3eee3;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
+.brand{font:900 26px Georgia,serif;letter-spacing:-1px}.brand b{color:var(--lime)}
+.tag{font:11px Consolas,monospace;color:#9a968a;margin:2px 0 26px}
+aside button{display:flex;gap:12px;align-items:center;width:100%;background:none;border:0;color:#cfcabb;padding:11px 12px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;margin-bottom:4px;transition:.15s}
+aside button i{font:700 11px Consolas,monospace;color:var(--lime);width:22px;font-style:normal}
+aside button:hover{background:#26262c;color:#fff}
+aside button.on{background:var(--lime);color:var(--ink);font-weight:700}aside button.on i{color:var(--ink)}
+.foot{margin-top:auto;font:11px Consolas,monospace;color:#8b8779;border-top:1px solid #333;padding-top:12px}
+main{flex:1;padding:26px 34px;max-width:1280px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:12px;flex-wrap:wrap}
+h1{font:900 34px Georgia,serif;letter-spacing:-1px}h1 em{background:var(--lime);padding:0 8px;font-style:normal;border-radius:6px}
+.sub{color:var(--mu);max-width:760px;margin-top:4px}
+.clock{font:700 13px Consolas,monospace;background:#fff;border:2px solid var(--ink);padding:6px 12px;border-radius:99px}
+.card{background:#fff;border:2px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--ink);padding:18px;margin-bottom:20px;animation:up .45s both}
+@keyframes up{from{opacity:0;transform:translateY(12px)}}
+.card h3{font:800 18px Georgia,serif;margin-bottom:10px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin-bottom:20px}
+.kpi{border:2px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--ink);padding:16px;animation:up .45s both}
+.kpi b{font:900 44px Georgia,serif;line-height:1;display:block}.kpi span{font:12px Consolas,monospace;text-transform:uppercase}
+.btn{background:var(--ink);color:#fff;border:2px solid var(--ink);padding:9px 16px;border-radius:10px;cursor:pointer;font-weight:700;box-shadow:3px 3px 0 var(--coral);transition:.12s}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--coral)}.btn:active{transform:none;box-shadow:none}
+.btn.l{background:var(--lime);color:var(--ink);box-shadow:3px 3px 0 var(--ink)}.btn.l:hover{box-shadow:5px 5px 0 var(--ink)}
+.btn.c{background:var(--coral);color:#fff;box-shadow:3px 3px 0 var(--ink)}.btn.w{background:#fff;color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+input,select{border:2px solid var(--ink);border-radius:9px;padding:7px 10px;background:#fff;font:inherit}
+.cols{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}@media(max-width:1000px){.cols{grid-template-columns:1fr}aside{width:74px}aside span,.tag,.foot{display:none}}
+.halls{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hall{border:2px solid var(--ink);border-radius:12px;padding:12px}.hall h4{font:800 16px Georgia,serif;display:flex;justify-content:space-between}
+.hall small{color:var(--mu);font:11px Consolas,monospace}.mini{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}
+.tg{font:700 11px Consolas,monospace;padding:2px 8px;border:1.5px solid var(--ink);border-radius:99px}
+.meter{height:12px;border:2px solid var(--ink);border-radius:99px;overflow:hidden;background:#fff}.meter i{display:block;height:100%;background:var(--ink);animation:grow 1s both;transform-origin:left}
+@keyframes grow{from{transform:scaleX(0)}}
+.step{display:flex;gap:12px;padding:10px;border:2px solid var(--ink);border-radius:12px;margin-bottom:10px;background:#fff;transition:.3s}
+.step.done{background:var(--mint)}.step.run{background:var(--sun)}
+.step .n{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-weight:800;flex:none;background:#fff}
+.step small{display:block;color:#3a382f;font:12px Consolas,monospace}
+table{width:100%;border-collapse:collapse}th{text-align:left;font:700 11px Consolas,monospace;text-transform:uppercase;padding:8px;border-bottom:2px solid var(--ink)}
+td{padding:8px;border-bottom:1px solid #e4dfd0}tr:hover td{background:#faf7ef}
+.pill{font:700 11px Consolas,monospace;padding:3px 10px;border-radius:99px;border:1.5px solid var(--ink)}
+.New{background:#eee}.Ready{background:var(--sky)}.Running{background:var(--lime)}.Waiting{background:var(--sun)}.Terminated{background:#ddd;color:#555}.HIT{background:var(--mint)}.FAULT{background:var(--coral);color:#fff}
+.term{background:var(--ink);color:var(--lime);font:12px Consolas,monospace;padding:12px;border-radius:12px;height:190px;overflow:auto;white-space:pre-wrap}
+.lane{display:flex;align-items:center;margin:6px 0}.lane b{width:96px;font:700 12px Consolas,monospace}
+.track{position:relative;flex:1;height:36px;border:2px solid var(--ink);border-radius:9px;background:repeating-linear-gradient(90deg,#faf7ef 0 39px,#eee8d6 39px 40px)}
+.track i{position:absolute;top:2px;height:28px;border:2px solid var(--ink);border-radius:7px;font:700 12px Consolas,monospace;font-style:normal;display:grid;place-items:center;transform-origin:left;animation:grow .8s both}
+.axis{display:flex;justify-content:space-between;margin-left:96px;font:11px Consolas,monospace;color:var(--mu)}
+.big{font-size:15px;margin:10px 0}.big b{background:var(--lime);padding:1px 8px;border-radius:6px}
+.chip{display:inline-block;min-width:34px;text-align:center;padding:2px 8px;margin-right:5px;border:2px solid var(--ink);border-radius:8px;font:700 12px Consolas,monospace;background:#fff}.chip.new{background:var(--sun)}
+.tree .nd{padding:4px 8px;border-radius:8px;cursor:pointer}.tree .nd:hover{background:#f1ecdc}.tree .nd.sel{background:var(--lime);outline:2px solid var(--ink)}
+.tree .k{margin-left:18px;border-left:2px dashed #bdb7a3;padding-left:8px}.tree em{color:var(--mu);font:11px Consolas,monospace;font-style:normal}
+.disk{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}.disk div{aspect-ratio:1;border:2px solid #d8d2bf;border-radius:6px;font:10px Consolas,monospace;display:grid;place-items:center;color:#aaa;animation:up .4s both}
+.disk div.u{border-color:var(--ink);color:var(--ink);font-weight:700}
+#toast{position:fixed;right:24px;bottom:24px;background:var(--coral);color:#fff;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:12px 16px;border-radius:12px;max-width:380px;font-weight:600;transform:translateY(90px);transition:.3s}#toast.s{transform:none}
+pre{white-space:pre-wrap;font:12px/1.6 Consolas,monospace}
+</style></head><body>
+<aside><div class="brand">EXAM<b>/</b>OS</div><div class="tag">hall management simulator</div>
+<button data-v="dash"><i>◆</i><span>Dashboard</span></button>
+<button data-v="co1"><i>01</i><span>System &amp; Batch</span></button>
+<button data-v="co2"><i>02</i><span>Processes</span></button>
+<button data-v="co3"><i>03</i><span>Scheduling</span></button>
+<button data-v="co4"><i>04</i><span>Memory</span></button>
+<button data-v="co5"><i>05</i><span>File System</span></button>
+<div class="foot">Project 5 · OS Lab<br>FCFS · Priority · LRU</div></aside>
+<main><div class="top"><div><h1 id="ttl"></h1><p class="sub" id="sb"></p></div></div><div id="view"></div></main><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),COL=['#8ec5ff','#c8f031','#ffb4a2','#c9b6ff','#ffd54a','#9be8c3','#ff9ec4','#ffc27a'];
+const api=async u=>{const r=await fetch('/api/'+u),j=await r.json();if(j.error){toast(j.error);throw 0}return j};
+const toast=m=>{const t=$('#toast');t.textContent=m;t.className='s';setTimeout(()=>t.className='',4200)};
+const tbl=(h,r)=>`<table><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${r.map(x=>`<tr>${x.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
+const gantt=rows=>{const L=[...new Set(rows.map(r=>r[0]))].sort(),M=Math.max(...rows.map(r=>r[3]));
+return `${L.map(l=>`<div class=lane><b>${l}</b><div class=track>${rows.filter(r=>r[0]==l).map(r=>`<i style="left:${r[2]/M*100}%;width:${(r[3]-r[2])/M*100}%;background:${COL[r[4]%8]}">${r[1]}</i>`).join('')}</div></div>`).join('')}<div class=axis><span>0</span><span>${Math.round(M/2)}</span><span>${M} min</span></div>`};
+const T={dash:['Control <em>room</em>','One look at the whole exam event: halls, workers and the OS pipeline behind it.'],co1:['System &amp; <em>batch</em>','OS services used in this project, and why exams are a batch-processing workload.'],co2:['Student <em>processes</em>','Each student session is a process with a PCB. Each hall has one invigilator thread (one-to-many model).'],co3:['Scheduling <em>engine</em>','FCFS hall allocation, priority invigilators with aging, and hall-resource deadlock detection and recovery.'],co4:['Memory <em>pages</em>','Seating plans are paged (10 seats a page: A2 = Hall A, seats 21-30). LRU decides what stays when memory is full.'],co5:['File <em>system</em>','Seating files on a 100-block disk, contiguous first-fit, inside a tree directory per department.']};
+let cur,timer,since=0,mode='deadlock',sel='/';const V={};
+document.querySelectorAll('aside button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+function go(v){cur=v;clearInterval(timer);document.querySelectorAll('aside button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));$('#ttl').innerHTML=T[v][0];$('#sb').textContent=T[v][1];V[v]()}
+/* DASHBOARD */
+V.dash=async()=>{const d=await api('overview'),k=[['Students',d.students,'#8ec5ff'],['Exam batches',d.batches,'#c8f031'],['Halls',d.halls.length,'#ffd54a'],['Invigilators',d.invs.length,'#ffb4a2']];
+$('#view').innerHTML=`<div class=kpis>${k.map(x=>`<div class=kpi style="background:${x[2]}"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('')}</div>
+<div class=cols><div class=card><h3>Hall plan (FCFS)</h3><div class=halls>${d.halls.map(h=>`<div class=hall><h4>${h.name}<small>${h.cap} seats</small></h4><div class=mini>${h.batches.map(b=>`<span class=tg style="background:${COL[parseInt(b[0].slice(1))%8]}">${b[0]} ${b[1]} · ${b[2]}–${b[3]}m</span>`).join('')||'<small>idle</small>'}</div><div class=meter><i style="width:${h.busy/d.span*100}%"></i></div><small>busy ${Math.round(h.busy/d.span*100)}% of ${d.span} min</small></div>`).join('')}</div></div>
+<div class=card><h3>OS pipeline</h3><div class=row><button class="btn l" onclick=runAll()>▶ Run all modules</button></div><div id=pipe></div></div></div>`;pipeDraw(ran);if(!ran.length)runAll(true)};
+let ran=[];
+const STEPS=[['System info','CO1'],['Student processes + threads','CO2'],['FCFS · Priority · Deadlock','CO3'],['Paging + LRU','CO4'],['Files + directory','CO5']];
+function pipeDraw(res,run=-1){$('#pipe').innerHTML=STEPS.map((s,i)=>`<div class="step ${i<res.length?'done':i==run?'run':''}"><div class=n>${i<res.length?'✓':i+1}</div><div><b>${s[0]}</b> <small style="display:inline">· ${s[1]}</small><small>${res[i]||'waiting…'}</small></div></div>`).join('')}
+async function runAll(fast){const r=[];const pause=()=>new Promise(x=>setTimeout(x,fast===true?0:450));
+pipeDraw(r,0);await pause();const i=await api('info');const g=k=>(i.info.find(x=>x[0]==k)||[0,'?'])[1];r.push(`${g('Operating System')} · ${g('CPU Cores (logical)')} cores`);
+pipeDraw(r,1);await pause();await api('session/start?n=3');r.push('thread per hall launched (see Processes tab)');
+pipeDraw(r,2);await pause();const f=await api('fcfs'),p=await api('priority?aging=1'),a=await api('deadlock?mode=deadlock'),b=await api('deadlock?mode=deadlock&recover=1');
+r.push(`FCFS avg wait ${f.avg.wait.toFixed(1)}m · priority wait ${p.avg.toFixed(1)}m · deadlock ${a.cycle.join('→')} ${b.cycle?'unresolved':'recovered'}`);
+pipeDraw(r,3);await pause();const m=await api('memory?frames=3');r.push(`LRU hit ${(m.lru.ratio*100).toFixed(0)}% vs FIFO ${(m.fifo.ratio*100).toFixed(0)}%`);
+pipeDraw(r,4);await pause();const s=await api('fs/state');r.push(`${s.stats.used} blocks used · fragmentation ${s.stats.frag.toFixed(0)}%`);ran=r;if(cur=='dash')pipeDraw(r)}
+/* CO1 */
+V.co1=async()=>{const d=await api('info');$('#view').innerHTML=`<div class=card>${tbl(['OS service','Concept','In this project'],d.services)}</div><div class=card><pre>${d.batch}</pre></div>`};
+/* CO2 */
+V.co2=()=>{since=0;$('#view').innerHTML=`<div class=card><div class=row>Students per hall <input id=n type=number min=1 max=10 value=5 style="width:70px"><button class="btn l" id=go>▶ Start exam session</button><span id=cnt></span></div><pre id=model></pre></div><div class=card id=pt></div><div class=card><div class=term id=log></div></div>`;
+$('#go').onclick=async()=>{since=0;$('#log').textContent='';await api('session/start?n='+$('#n').value)};
+const poll=async()=>{if(cur!='co2')return;const d=await api('session/poll?since='+since);since=d.total;$('#model').textContent=d.model;const c={};d.pcbs.forEach(p=>c[p.state]=(c[p.state]||0)+1);
+$('#cnt').innerHTML=['New','Ready','Running','Waiting','Terminated'].map(s=>`<span class="pill ${s}">${s} ${c[s]||0}</span>`).join(' ');
+$('#pt').innerHTML=d.pcbs.length?tbl(['PID','Name','Roll','State','Hall','Seat','Started'],d.pcbs.map(p=>[p.pid,p.name,p.roll,`<span class="pill ${p.state}">${p.state}</span>`,p.hall,p.seat,p.start])):'<i>No processes yet. Start a session.</i>';
+if(d.logs.length){const l=$('#log');l.textContent+=d.logs.join('\n')+'\n';l.scrollTop=l.scrollHeight}};(async()=>{const d=await api('session/poll?since=0');if(!d.pcbs.length&&!d.running)await api('session/start?n=5')})().then(()=>{poll();timer=setInterval(poll,500)})};
+/* CO3 */
+V.co3=()=>{$('#view').innerHTML=`<div class=card><div class=row><button class=btn onclick=fcfs()>FCFS halls</button><label><input type=checkbox id=ag> aging</label><button class=btn onclick=prio()>Priority invigilators</button><button class="btn c" onclick="dl('deadlock')">⚠ Detect deadlock</button><button class="btn w" onclick="dl('safe')">Safe scenario</button><button id=rec class="btn l" style="display:none" onclick="dl(mode,1)">🛠 Recover</button></div></div><div class=card><h3>1 · FCFS hall allocation</h3><div id=o3a></div></div><div class=card><h3>2 · Priority invigilator assignment</h3><div id=o3b></div></div><div class=card><h3>3 · Hall-resource deadlock</h3><div id=o3c></div></div>`;fcfs();prio();dl("deadlock")};
+async function fcfs(){const d=await api('fcfs');$('#o3a').innerHTML=tbl(['Batch','Dept','Students','Hall','Arrival','Start','End','Wait','TAT'],d.rows.map(r=>[r.batch.id,r.batch.dept,r.batch.students,r.hall,r.batch.arrival,r.start,r.end,r.wait,r.tat]))+`<div class=big>Avg waiting <b>${d.avg.wait.toFixed(1)} min</b> · Avg turnaround <b>${d.avg.tat.toFixed(1)} min</b></div>`+gantt(d.rows.map((r,i)=>[r.hall,r.batch.id,r.start,r.end,i]))}
+async function prio(){const d=await api('priority?aging='+($('#ag').checked?1:0));$('#o3b').innerHTML=tbl(['Batch','Priority','Invigilator','Rank','Ready','Start','End','Wait'],d.rows.map(r=>[r.batch.id,r.batch.priority,r.inv,r.rank,r.ready,r.start,r.end,r.wait]))+`<div class=big>Avg wait for invigilator <b>${d.avg.toFixed(1)} min</b></div>`+gantt(d.rows.map(r=>[r.inv,r.batch.id,r.start,r.end,r.batch.priority]))}
+async function dl(m,rc){mode=m;const d=await api(`deadlock?mode=${m}&recover=${rc?1:0}`),cy=new Set(d.cycle||[]),P={};d.nodes.forEach((n,i)=>{const a=i/d.nodes.length*6.283-1.57;P[n]=[170+85*Math.cos(a),115+75*Math.sin(a)]});
+const svg=`<svg width=340 height=230><defs><marker id=ar markerWidth=8 markerHeight=8 refX=7 refY=4 orient=auto><path d="M0,0L8,4L0,8z" fill="#16161a"/></marker></defs>${d.edges.map(([a,b,r])=>{const [x1,y1]=P[a],[x2,y2]=P[b],bad=cy.has(a)&&cy.has(b);return `<line x1=${x1} y1=${y1} x2=${x1+(x2-x1)*.72} y2=${y1+(y2-y1)*.72} stroke="${bad?'#ff6a4d':'#16161a'}" stroke-width=3 marker-end="url(#ar)"/><text x=${(x1+x2)/2+6} y=${(y1+y2)/2-4} font-size=10 font-family=Consolas>${r}</text>`}).join('')}${d.nodes.map(n=>`<circle cx=${P[n][0]} cy=${P[n][1]} r=25 fill="${cy.has(n)?'#ff6a4d':'#c8f031'}" stroke="#16161a" stroke-width=3 /><text x=${P[n][0]} y=${P[n][1]+4} font-size=10 font-weight=700 text-anchor=middle>${n}</text>`).join('')}</svg>`;
+$('#o3c').innerHTML=`<div class=cols><div>${svg}</div><pre>${d.steps.concat([''],d.lines).join('\n')}</pre></div>`;$('#rec').style.display=d.cycle&&!rc?'inline-block':'none'}
+/* CO4 */
+V.co4=()=>{$('#view').innerHTML=`<div class=card><div class=row>Frames <input id=fr type=number min=1 max=8 value=3 style="width:70px"> Reference <input id=rf style="width:360px" value="A0 B0 A0 C0 A0 B0 D0 A0 B0 C0 A0 B0 A1 A0 B0 D0"><select id=al><option>LRU<option>FIFO</select><button class="btn l" onclick=mm()>Run</button></div><div id=o4></div></div>`;mm()};
+async function mm(){const d=await api(`memory?frames=${$('#fr').value}&ref=${encodeURIComponent($('#rf').value)}`),r=d[$('#al').value.toLowerCase()];
+const bar=(n,x)=>`<div>${n}: ${x.hits} hits · ${x.faults} faults · <b>${(x.ratio*100).toFixed(1)}%</b> hit ratio</div><div class=meter style="margin:4px 0 12px"><i style="width:${x.ratio*100}%;background:${n=='LRU'?'#16161a':'#ff6a4d'}"></i></div>`;
+$('#o4').innerHTML=bar('LRU',d.lru)+bar('FIFO',d.fifo)+tbl(['Step','Page','Frames','Result','Evicted'],r.steps.map(s=>[s.step,`<b>${s.page}</b>`,s.frames.map(f=>`<span class="chip ${f==s.page&&s.result=='FAULT'?'new':''}">${f}</span>`).join(''),`<span class="pill ${s.result}">${s.result}</span>`,s.evicted||'–']))}
+/* CO5 */
+V.co5=()=>{$('#view').innerHTML=`<div class=card><div class=row><button class=btn onclick=fop('mkdir')>📁 mkdir</button><button class=btn onclick=fop('create')>📄 create file</button><button class="btn c" onclick=fop('delete')>🗑 delete</button><button class="btn l" onclick=fop('compact')>🧹 compact disk</button><button class="btn w" onclick=fop('reset')>↺ reset</button><span id=st class=big></span></div><div class=cols><div class=tree id=tr></div><div class=disk id=dk></div></div></div>`;fop('')};
+async function fop(op){let q='';
+if(op=='mkdir'){const n=prompt('Folder name:');if(!n)return;q=`?path=${encodeURIComponent((sel=='/'?'':sel)+'/'+n)}`}
+if(op=='create'){const n=prompt('File name (e.g. hallB_seating.txt):');if(!n)return;const s=prompt('Size in blocks:','8');if(!s)return;q=`?path=${encodeURIComponent((sel=='/'?'':sel)+'/'+n)}&size=${s}`}
+if(op=='delete'){if(sel=='/')return;q='?path='+encodeURIComponent(sel);sel='/'}
+const d=await api('fs/'+(op||'state')+q);
+const nd=n=>`<div class="nd ${n.path==sel?'sel':''}" onclick="sel='${n.path}';fop('state')">${n.dir?'📁':'📄'} ${n.name} ${n.blocks?`<em>blocks ${n.blocks[0]}–${n.blocks[0]+n.blocks[1]-1}</em>`:''}</div>${n.children.length?`<div class=k>${n.children.map(nd).join('')}</div>`:''}`;
+$('#tr').innerHTML=nd(d.tree);
+$('#dk').innerHTML=d.disk.map((c,i)=>`<div class="${c?'u':''}" style="${c?`background:${COL[c[0]%8]}`:''};animation-delay:${i*5}ms" title="${c?c[1]:'free'}">${i}</div>`).join('');
+$('#st').innerHTML=`Used <b>${d.stats.used}</b> · Free <b>${d.stats.free}</b> · Largest hole <b>${d.stats.largest}</b> · Fragmentation <b>${d.stats.frag.toFixed(0)}%</b>`}
+go('dash');
+</script></body></html>
